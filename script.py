@@ -1,5 +1,6 @@
 import time
-import uuid
+import random
+import string
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 TARGET_URL = "https://h8nsg1-ltcm4i61r-arcadawebapps2.vercel.app/m/b48a66f23021bd2875fc"
@@ -42,12 +43,16 @@ with sync_playwright() as p:
                 timeout=60000
             )
 
-            # ساخت متن یکتا برای هر پیام
-            unique_id = uuid.uuid4().hex[:8]
-            message_text = f"پیام تست شماره {i} - {unique_id}"
+            # تولید رشته تصادفی با دقیقاً ۱۰۰۰ کاراکتر
+            random_message = ''.join(
+                random.choices(
+                    string.ascii_letters + string.digits,
+                    k=1000
+                )
+            )
 
             # وارد کردن پیام
-            message_box.fill(message_text)
+            message_box.fill(random_message)
 
             # دکمه ارسال
             submit_button = page.get_by_text(
@@ -59,13 +64,30 @@ with sync_playwright() as p:
                 timeout=15000
             )
 
-            # کلیک روی دکمه
+            # کلیک روی دکمه ارسال
             submit_button.click()
 
-            # کمی صبر برای پردازش و ذخیره پیام
-            page.wait_for_timeout(800)
+            # بررسی واقعی موفقیت ارسال با منتظر ماندن برای پیام تأیید سایت
+            try:
+                success_message = page.get_by_text(
+                    "پیامت با موفقیت ارسال شد",
+                    exact=False
+                )
 
-            print(f"پیام {i} با موفقیت ارسال شد: {message_text}")
+                success_message.wait_for(
+                    state="visible",
+                    timeout=30000
+                )
+
+                print(f"✅ پیام {i} واقعاً توسط سایت تأیید شد")
+
+            except PlaywrightTimeoutError:
+                print(f"❌ پیام {i} تأیید نشد")
+                print("URL:", page.url)
+
+                # متن صفحه را برای تشخیص علت چاپ کن
+                print("متن صفحه:")
+                print(page.locator("body").inner_text()[:2000])
 
     except PlaywrightTimeoutError as e:
         print("❌ Playwright Timeout")
