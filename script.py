@@ -6,7 +6,7 @@ TARGET_URL = "https://h8nsg1-ltcm4i61r-arcadawebapps2.vercel.app/m/b48a66f23021b
 MESSAGE_COUNT = 500
 
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False)
+    browser = p.chromium.launch(headless=true)
     context = browser.new_context()
     page = context.new_page()
 
