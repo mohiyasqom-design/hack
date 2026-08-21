@@ -3,7 +3,7 @@ import random
 import string
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
-TARGET_URL = "https://h8nsg1-ltcm4i61r-arcadawebapps2.vercel.app/m/b48a66f23021bd2875fc"
+TARGET_URL = "https://h8nsg1-ltcm4i61r-arcadawebapps2.vercel.app/m/6e1995b186b8c262842b"
 
 MESSAGE_COUNT = 500  # تعداد پیام‌های انبوه
 
